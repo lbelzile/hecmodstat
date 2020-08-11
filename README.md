@@ -4,6 +4,12 @@ Ce paquetage **R** contient des tutoriels et les jeux de données du cours MATH 
 
 Vous pouvez installer le paquetage à partir de Github à l'aide des commandes suivantes après avoir installé `remotes`:
 ```R
+install.packages(c("learnr","remotes"))
 remotes::install_github("lbelzile/hecmodstat")
 ```
 
+Des tutoriels sont disponibles.
+
+```R
+learnr::run_tutorial("intro", package = "hecmodstat")
+```
