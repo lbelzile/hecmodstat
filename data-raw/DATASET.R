@@ -11,6 +11,12 @@ external_env <- new.env()
 for(file in lfile){
   filen <- sub('\\.sas7bdat$', '', file)
   data <- haven::read_sas(file)
+  class(data) <- "data.frame"
+  for(col in colnames(data)){
+    attr(data[,deparse(as.name(col))],"format.sas") <- NULL
+  }
+  attr(data,"label") <- NULL
+  data <- tibble::as_tibble(data)
   data <- data %>% mutate(across(where(is.character), factor))
   if(filen == "accident"){
     data  <-  data  %>%

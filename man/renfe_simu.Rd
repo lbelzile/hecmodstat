@@ -11,7 +11,7 @@ Une base de données de 1000 observations
 \item{statW}{statistique de Welch pour le test de localisation pour deux échantillons}
 \item{icbi}{borne inférieure de l'intervalle de confiance basé sur la statistique de Welch}
 \item{icbs}{borne supérieure de l'intervalle de confiance basé sur la statistique de Welch}
-\item{ivalp}{valeur-p asymptotique}
+\item{valp}{valeur-p asymptotique}
 }
 }
 \source{

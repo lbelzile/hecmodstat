@@ -4,7 +4,7 @@ NULL
 #' Prix de billets de train
 #'
 #' Un sous-ensemble de billets de trains pour le trajet entre Madrid et Barcelone
-#' vendus par la Renfe pour trois types de trainoit Alta Velocidad Española (\code{AVE}),
+#' vendus par la Renfe pour trois types de trains, soit Alta Velocidad Española (\code{AVE}),
 #' soit Alta Velocidad Española conjointement avec TGV (un partenariat entre la SNCF et Renfe
 #' pour les trains à destination ou en provenance de Toulouse) \code{AVE-TGV}, soit les trains régionaux \code{REXPRESS};
 #'  seuls les trains étiquetés \code{AVE} ou \code{AVE-TGV} sont des trains à grande vitesse.
@@ -98,8 +98,8 @@ NULL
 #'
 #' @format Une base de données de 35 observations
 #' \describe{
-#' \item{c}{temps de réaction en secondes lors d'une conversation}
-#' \item{c}{temps de réaction en secondes lors d'une conversation}
+#' \item{t}{temps de réaction en textant (en secondes)}
+#' \item{c}{temps de réaction lors d'une conversation (en secondes)}
 #' }
 #' @source Marc Fredette
 "distraction"
@@ -117,7 +117,7 @@ NULL
 #' \item{statW}{statistique de Welch pour le test de localisation pour deux échantillons}
 #' \item{icbi}{borne inférieure de l'intervalle de confiance basé sur la statistique de Welch}
 #' \item{icbs}{borne supérieure de l'intervalle de confiance basé sur la statistique de Welch}
-#' \item{ivalp}{valeur-p asymptotique}
+#' \item{valp}{valeur-p asymptotique}
 #' }
 #' @source Léo Belzile
 "renfe_simu"

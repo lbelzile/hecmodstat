@@ -7,8 +7,8 @@
 \format{
 Une base de données de 35 observations
 \describe{
-\item{c}{temps de réaction en secondes lors d'une conversation}
-\item{c}{temps de réaction en secondes lors d'une conversation}
+\item{t}{temps de réaction en textant (en secondes)}
+\item{c}{temps de réaction lors d'une conversation (en secondes)}
 }
 }
 \source{

@@ -24,7 +24,7 @@ renfe
 }
 \description{
 Un sous-ensemble de billets de trains pour le trajet entre Madrid et Barcelone
-vendus par la Renfe pour trois types de trainoit Alta Velocidad Española (\code{AVE}),
+vendus par la Renfe pour trois types de trains, soit Alta Velocidad Española (\code{AVE}),
 soit Alta Velocidad Española conjointement avec TGV (un partenariat entre la SNCF et Renfe
 pour les trains à destination ou en provenance de Toulouse) \code{AVE-TGV}, soit les trains régionaux \code{REXPRESS};
  seuls les trains étiquetés \code{AVE} ou \code{AVE-TGV} sont des trains à grande vitesse.
