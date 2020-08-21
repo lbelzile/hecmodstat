@@ -1,7 +1,7 @@
 Package: hecmodstat
 Type: Package
 Title: Cours de Modélisation statistique à HEC Montréal
-Version: 2020.08.04
+Version: 2020.08.21
 Author: Léo Belzile
 Maintainer: Léo Belzile <leo.belzile@hec.ca>
 Description: Quiz et données du cours

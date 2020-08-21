@@ -35,8 +35,8 @@ question_checkbox("On effectue un test-_t_ pour un échantillon (hypothèse unil
 question("Considérons un test d'hypothèse pour un paramètre $\\theta$. Quels facteurs mènent à une augmentation de la puissance d'un test de Wald?",
   answer("Une augmentation de la taille de l'écart entre la valeur postulée du paramètre $\\theta_0$ et la vraie valeur.", correct = TRUE),
   answer("Une diminution de la taille de l'échantillon.", message = "Si la taille de l'échantillon diminue, on a moins d'information pour détecter une différence."),
-  answer("La normalité asymptotique de la loi nulle.", message = "La taille de l'échantillon influe sur la loi nulle, mais cela n'a aucun impact pour une taille d'échantillons donnée."),
-  answer("Une augmentation de la variabilité de l'estimateur $\\hat{\\theta}$.", message = "Plus l'estimateur est variable, moins l'observation est précise et moins on rejette l'hypothèse nulle souvent."),
+  answer("La normalité asymptotique de la loi nulle.", message = "La taille de l'échantillon influe sur la loi nulle, mais cela n'a aucun impact sur la puissance."),
+  answer("Une augmentation de la variabilité de l'estimateur $\\hat{\\theta}$.", message = "Plus l'estimateur est variable, moins l'observation est précise: on rejette l'hypothèse nulle moins souvent."),
   random_answer_order = TRUE,
   allow_retry = TRUE,
   submit_button = "Soumettre une réponse",
@@ -108,8 +108,8 @@ question("Supposons qu'on veut représenter graphiquement le salaire de professe
 ```{r boiteamoustache, echo = FALSE}
 question("Quels sont les éléments d'une boîte à moustache?",
          answer("la boîte donne la moyenne plus ou moins deux erreurs-type et les moustaches s'étendent jusqu'au minimum et au maximum de l'échantillon."),
-         answer("la boîte donne la moyenne et les 25 et 75 percentiles de la distribution, avec une moustache d'une longueur de 2 fois l'erreur-type et les points au-delà les valeurs aberrantes.", correct = TRUE),
-         answer("la boîte donne les quartiles et les moustaches s'étendent jusqu'à 1.5 fois l'écart interquartile."),
+         answer("la boîte donne la moyenne et les 25 et 75 percentiles de la distribution, avec une moustache d'une longueur de 2 fois l'erreur-type et les points au-delà les valeurs aberrantes."),
+         answer("la boîte donne les quartiles et les moustaches s'étendent jusqu'à 1.5 fois l'écart interquartile.", correct = TRUE),
          answer("la boîte donne la moyenne et les 25 et 75 percentiles de la distribution; les moustaches s'étendent jusqu'à 1.5 fois l'écart interquartile. Les valeurs au-delà sont aberrantes."),
  allow_retry = TRUE,
   submit_button = "Soumettre une réponse",
@@ -132,7 +132,7 @@ renfe %>% subset(type != "REXPRESS") %>%
 
 ```
 ```{r ameliorationgraphe, echo = FALSE}
-question_checkbox("Quels éléments du graphiques amélioreraient le graphique?",
+question_checkbox("Lesquelles des propositions suivantes amélioreraient le graphique?",
          answer("les axes devraient être permutés pour que la variable réponse figure sur l'axe des y (ordonnées)", correct = TRUE),
          answer("l'ajout d'une légende pour le code de couleur", correct = TRUE),
          answer("l'ajout de l'unité de prix", correct = TRUE),
@@ -142,7 +142,7 @@ question_checkbox("Quels éléments du graphiques amélioreraient le graphique?"
          answer("la transformation de la durée de trajet en variable catégorielle"),
          answer("l'utilisation de la transparence pour distinguer les duplicatas", correct = TRUE), 
          answer("l'ajout de bruit vertical pour éviter la superposition", message = "Si cette option est souvent souhaitable, la faible différence ici entre les durées risque de rendre la représentation graphique trompeuse."),
-         answer("un changement de l'axe pour qu'il inclut zéro", message = "Fausse bonne idée:n i le prix, ni la durée ne peuvent être plausiblement nuls et cette option compresserait les observations et rendrait difficile les comparaisons."),
+         answer("un changement de l'axe pour qu'il inclut zéro", message = "Fausse bonne idée: ni le prix, ni la durée ne peuvent être plausiblement nuls et cette option compresserait les observations et rendrait difficile les comparaisons."),
  allow_retry = TRUE,
   random_answer_order = TRUE,
   submit_button = "Soumettre une réponse",
