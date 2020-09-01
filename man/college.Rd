@@ -27,6 +27,6 @@ la distribution des salaires et vérifier s'il existe des
 inégalités salariales entre hommes et femmes.
 }
 \seealso{
-\link[car]{Salaries}
+\link[carData]{Salaries}
 }
 \keyword{datasets}

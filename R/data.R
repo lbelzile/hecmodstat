@@ -146,7 +146,7 @@ NULL
 #' }
 #'
 #' @source Fox J. and Weisberg, S. (2019) \emph{An R Companion to Applied Regression}, Third Edition, Sage.
-#' @seealso \link[car]{Salaries}
+#' @seealso \link[carData]{Salaries}
 "college"
 
 
@@ -257,7 +257,7 @@ NULL
 #' @docType data
 #' @format une base de données de 392 observations contenant les variables suivantes
 #' \describe{
-#' \item{\code{consommation}}{consommation d'essence (en miles par gallons américains)}
+#' \item{\code{autonomie}}{autonomie d'essence (en miles par gallons américains)}
 #' \item{\code{cylindre}}{facteur, nombre de cylindres}
 #' \item{\code{cylindree}}{cylindrée, le  volume balayé par les cylindres du moteur (en pouces cubiques)}
 #' \item{\code{puissance}}{puissance du moteur (en chevaux-vapeurs)}

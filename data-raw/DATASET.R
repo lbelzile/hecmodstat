@@ -28,6 +28,8 @@ for(file in lfile){
              jour = factor(jour))
   } else if(filen == "automobile"){
     data$nom <- NULL
+    data$autonomie <- data$consommation
+    data$consommation <- NULL
     data <- data %>%
       mutate(cylindre = factor(cylindre))
   } else if(filen == "billets"){
