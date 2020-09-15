@@ -1,0 +1,58 @@
+---
+title: "Quiz  - Chapitre 3 (inférence basée sur le vraisemblance)"
+output:
+  learnr::tutorial:
+    allow_skip: true
+runtime: shiny_prerendered
+description: >
+  Questions sur le maximum de vraisemblance, les tests basés sur la vraisemblance et les critères d'information. 
+  
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = TRUE, highlight = TRUE)
+```
+
+## Vraisemblance
+
+
+```{r trueorfalselik, echo=FALSE}
+question_radio("Lequel des énoncés suivant est vrai?",
+  answer("La log-vraisemblance est forcément négative.", message = "Si la loi des données est continue et que les observations sont indépendantes, la vraisemblance est le produit des densités et ces dernières ne sont pas bornées par 1."),
+  answer("Plus la valeur de la log-vraisemblance est élevée, meilleur est l'ajustement.", correct=TRUE),
+  answer("L'estimateur du maximum de vraisemblance pour les paramètres d'un échantillon de variables indépendantes et identiquement distribuées de loi $\\mathsf{No}(\\mu, \\sigma^2)$ sont la moyenne et la variance empiriques", correct = FALSE, message = "L'estimateur du maximum de vraisemblance de la variance divise la somme du carré des résidus par $n$, pas $n-1$."),
+  answer("Les estimateurs des moindres carrés ordinaires coincident toujours avec ceux du maximum de vraisemblance si les observations suivent une loi normale", correct = FALSE, message = "C'est uniquement le cas pour $\\boldsymbol{\\beta}$ dans le modèle linéaire normal avec une variance commune $\\sigma^2$."),
+  random_answer_order = TRUE,
+  allow_retry = TRUE,
+  submit_button = "Soumettre une réponse",
+  try_again_button = "Soumettre une nouvelle réponse")
+```
+
+
+```{r liktests, echo=FALSE}
+question_radio("Lequel des énoncés suivant est vrai?",
+  answer("Le test du rapport de vraisemblance nécessite l'ajustement et l'évaluation du modèle à la fois sous l'hypothèse nulle et l'hypothèse alternative",  correct = TRUE),
+  answer("Le test du score est calculé en évaluant le gradient et la hessienne de la log-vraisemblance à l'estimateur du maximum de vraisemblance du modèle complet.", correct = FALSE, message = "Par définition, l'estimateur du maximum de vraisemblance résoud l'équation du score et le gradient est nul."),
+  answer("Si $[0.1,0.6]$ est un intervalle de Wald de taux de couverture 95% pour $\\theta$, alors l'intervalle correspondant pour $\\exp(\\theta)$ est $[\\exp(0.1), \\exp(0.6)]$", correct = FALSE, message = "Si l'estimateur du maximum de vraisemblance est invariant aux reparamétrisations, les erreurs-types ne le sont pas sauf s'il s'agit d'une transformation linéaire (méthode delta)."),
+  answer("Les statistiques des tests de Wald et du rapport de vraisemblance donnent les même valeurs numériques.", correct = FALSE),
+  random_answer_order = TRUE,
+  allow_retry = TRUE,
+  submit_button = "Soumettre une réponse",
+  try_again_button = "Soumettre une nouvelle réponse")
+
+```
+
+
+```{r aic, echo=FALSE}
+question_radio("Lequel des énoncés suivant est vrai?",
+  answer("Le AIC mène toujours à un modèle plus simple que le BIC pour $n > 10$.",  correct = FALSE, message = "La pénalité du critère AIC est de deux fois le nombre de paramètres, tandis que celle du BIC est $\\ln(n)$ qui excède 2.30 dès que $n>10$."),
+  answer("Si on compare deux modèles emboîtés, on devrait prendre celui avec la plus grande vraisemblance.", correct = FALSE, message = "Le modèle plus petit (modèle contraint) donne toujours un moins bon ajustement que le modèle complet (pensez au critère du maximum de vraisemblance)."),
+  answer("Selon un critère d'information donnée, plus la valeur numérique est petite, meilleur est le modèle.", correct = TRUE, message = "Moins deux fois la log-vraisemblance plus pénalité. Plus la log-vraisemblance est élevée, plus $-2 \\ell(\\boldsymbol{\\theta})$ est petit."),
+  answer("Les critères d'information et les procédures de test donnent les même conclusions.", correct = FALSE, message = "On ne peut pas comparer des modèles qui ne sont pas emboîtés à l'aide de tests de vraisemblance. À l'inverse, les critères d'information ne sont pas des procédures formelles (comparer le quantile 0.95 de la loi khi-deux, 3.84, avec la pénalité de 2 de l'AIC."),
+  random_answer_order = TRUE,
+  allow_retry = TRUE,
+  submit_button = "Soumettre une réponse",
+  try_again_button = "Soumettre une nouvelle réponse")
+
+```
