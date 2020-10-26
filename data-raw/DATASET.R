@@ -96,6 +96,21 @@ for(file in lfile){
   } else if(filen == "heures"){
       data <- data %>%
         rename(heures = HEURES)
+  } else if(filen == "chimpanze"){
+    data <- data %>%
+      mutate(chimp = factor(chimp),
+             mot = factor(mot))
+  } else if(filen == "soccer"){
+    data <- data %>%
+      mutate(adversaire = factor(adversaire),
+             equipe = factor(equipe))
+  } else if(filen == "socceragg"){
+    data <- data %>%
+      mutate(domicile = factor(domicile),
+             visiteur = factor(visiteur))
+  } else if(filen == "buchanan"){
+    data <- data %>%
+      mutate(comte = factor(comte))
   }
   assign(x = filen, value = data, envir = external_env)
 }
