@@ -111,7 +111,41 @@ for(file in lfile){
   } else if(filen == "buchanan"){
     data <- data %>%
       mutate(comte = factor(comte))
+  } else if(filen == "fev1"){
+    data <- data %>% rename(id=ID,
+                            taille=HT,
+                            age=AGE,
+                            taillebase=BASEHT,
+                            agebase=BASEAGE,
+                            logfev1=LOGFEV1) %>%
+      mutate(id = factor(id))
+  } else if(filen == "poussin"){
+    data <- data %>%
+      mutate(poussin = factor(poussin),
+             regime = factor(regime))
+  } else if(filen == "beattheblues"){
+    data$id <- factor(1:nrow(data))
+    levels(data$traitement)[1] <- c("beat the blues")
+  } else if(filen == "dentaire"){
+    data <- data %>% rename(id=ID,
+                            dist8=Y1,
+                            dist10=Y2,
+                            dist12=Y3,
+                            dist14=Y4) %>%
+      mutate(id = factor(id))
+  } else if(filen == "masseporc"){
+    data <- data %>% mutate(id = factor(id))
+  } else if(filen == "rats"){
+    data <- data %>% rename(id=ID,
+                            masse1=Y1,
+                            masse2=Y2,
+                            masse3=Y3,
+                            masse4=Y4,
+                            masse5=Y5) %>%
+      mutate(id = factor(id),
+             groupe = factor(groupe))
   }
+
   assign(x = filen, value = data, envir = external_env)
 }
 rm(data, filen)
@@ -120,7 +154,7 @@ rm(data, filen)
 # external_env$bixiuni <- NULL
 # external_env$college <- external_env$salaireprofs
 # external_env$salaireprofs <- NULL
-rm(covid, envir = external_env)
+# rm(covid, envir = external_env)
 
 
 ls(external_env)
