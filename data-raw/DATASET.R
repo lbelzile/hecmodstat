@@ -144,6 +144,8 @@ for(file in lfile){
                             masse5=Y5) %>%
       mutate(id = factor(id),
              groupe = factor(groupe))
+  } else if(filen == "allaitement"){
+    data <- data %>% mutate(race = factor(race))
   }
 
   assign(x = filen, value = data, envir = external_env)
