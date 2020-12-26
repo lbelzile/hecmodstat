@@ -146,6 +146,9 @@ for(file in lfile){
              groupe = factor(groupe))
   } else if(filen == "allaitement"){
     data <- data %>% mutate(race = factor(race))
+  } else if(filen == "chaussures"){
+    data <- data %>% mutate(statut = factor(statut),
+                            sexe = factor(sexe))
   }
 
   assign(x = filen, value = data, envir = external_env)
