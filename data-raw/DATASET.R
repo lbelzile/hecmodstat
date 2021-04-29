@@ -117,7 +117,7 @@ for(file in lfile){
                             age=AGE,
                             taillebase=BASEHT,
                             agebase=BASEAGE,
-                            logfev1=LOGFEV1) %>%
+                            logvem1=LOGFEV1) %>%
       mutate(id = factor(id))
   } else if(filen == "poussin"){
     data <- data %>%
