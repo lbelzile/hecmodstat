@@ -1,0 +1,455 @@
+---
+title: "Quiz  - Chapitre 8 (analyse de survie)"
+output:
+  learnr::tutorial:
+    allow_skip: true
+runtime: shiny_prerendered
+description: >
+  Questions sur l'estimateur de Kaplan-Meier et le modèle à risque proportionnel de Cox.
+
+---
+
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = TRUE, highlight = TRUE)
+```
+
+### Estimateur de Kaplan--Meier
+
+```{r, echo = FALSE}
+bad <- NULL
+while(is.null(bad)){
+  n <- 25
+  time <- as.integer(round(0.51+abs(rnorm(n = n, mean = 10, sd = 10))))
+  cens <- rbinom(n = n, size = 1,
+                 prob = runif(1, min = 0.2, max = 0.3))
+  km <- survival::survfit(survival::Surv(time, event = 1-cens) ~ 1)
+  a <- summary(km)
+  media <- a$time[min(which(round(a$surv,3) <= 0.5))]
+  meanSurv <- as.numeric(survival:::survmean(km, rmean=max(time))[[1]]["*rmean"])
+  tab <- with(a, data.frame(time = time,
+                            n.risk = n.risk,
+                            n.event = n.event,
+                            surv = round(surv,3)))
+
+  njump <- nrow(tab)
+  if((njump > 10) || (sum(cens)>0)){
+    bad <- FALSE
+  }
+}
+b <- sample(floor(njump/2):ceiling(0.75*njump), 1)
+ncensb <- tab[b,"n.risk"]-sum(tab[b:njump, "n.event"])
+timebet <- NULL
+while(is.null(timebet)){
+  pottime <- tab$time[1+which(diff(tab$time)>1)]-1
+  if((length(pottime) == 1) & isTRUE(all.equal(pottime, max(tab$time), check.attributes = FALSE))){
+    stop("Invalid input: change seed")
+  }
+  timebet <- sample(pottime,1)
+  if(timebet == max(tab$time)){
+    timebet <- NULL
+  } # potential infinite loop here
+}
+indbefbet <- which(tab$time == max(tab$time[tab$time < timebet]))
+wrongbet <- data.frame(time = tab$time[indbefbet:(indbefbet+1)],
+                       surv = tab$surv[indbefbet:(indbefbet+1)])
+wsurvbet <- round(as.numeric(predict(lm(surv ~ time, data = wrongbet),
+                    newdata = data.frame(time = tab$time[indbefbet]-1))), 3)
+survbet <- round(tab$surv[indbefbet],3)
+lastobs <- tab$n.risk[nrow(tab)] == tab$n.event[nrow(tab)]
+
+correct <- c(paste(ncensb, "parmi les", tab$n.risk[b],
+               "temps égaux ou excédant",
+            tab$time[b], "jours",
+            ifelse(ncensb < 2, "est censuré","sont censurés"), "à droite."),
+            paste("L'estimé du temps de survie médian est", as.integer(media),"jours."),
+            paste0("L'estimée de la probabilité de survivre au delà de ",
+                 timebet, " jours est ",round(survbet,3),"."),
+            paste0("L'estimé du temps moyen de survie",
+                  ifelse(lastobs, ", "," restreint, "), round(meanSurv, 3),
+                  " jours, est supérieur à la moyenne empirique des temps de survie.")
+)
+wrong <- c(paste(tab$n.risk[nrow(tab)], "des", tab$n.risk[b],
+               "temps de survie égaux ou excédant",
+            tab$time[b], "jours",
+            ifelse(tab$n.risk[nrow(tab)] < 2, "est censuré","sont censurés"),
+            "à droite."),
+           paste("L'estimé du temps médian de survie est", tab$time[max(which(tab$time <= media))-1],"jours."),
+           paste0("La probabilité estimée de survivre au delà de ",
+                 timebet, " jours est ",round(wsurvbet,3),"."),
+           paste("L'estimé du temps moyen de survie coïncide avec la moyenne empirique, soit", round(mean(time), 2), "jours.")
+)
+wtrue <- sample(c(TRUE, FALSE),  size = 4, replace = TRUE)
+qu <- ifelse(wtrue, correct, wrong)
+ans <- wtrue
+sc <-  list(questions = qu,
+      solutions = ans)
+
+# plot(km, ylab = "survival probability",
+#      xlab = "time", yaxs = "i", xaxs = "i", bty = "l")
+```
+
+On considère la survie (en jours) pour des données sujettes à de la censure à droite aléatoire. La fonction de survie est estimée à l'aide de l'estimateur de Kaplan--Meier.
+
+```{r printKM, echo = FALSE, comment = NA}
+tab[,1:3] <- sapply(tab[,1:3], function(x){paste0("$",sprintf("%.0f", x),"$")})
+tab$surv <- paste0("$",sprintf("%.3f", tab$surv),"$")
+colnames(tab) <- c("temps", "nombre restant","nombre d'échecs", "survie")
+knitr::kable(tab, align="lrrrr",
+                     label = "tabkm",
+                     caption = "Résumé de l'estimation de Kaplan--Meier de la fonction de survie.",
+      booktabs = TRUE)
+
+```
+
+```{r question10, echo = FALSE}
+question_checkbox("Sur la base du résumé de la fonction de survie estimée, quels énoncés parmi les suivants sont vrais?",
+         answer(sc$questions[1], correct = sc$solutions[1]),
+         answer(sc$questions[2], correct = sc$solutions[2]),
+         answer(sc$questions[3], correct = sc$solutions[3]),
+         answer(sc$questions[4], correct = sc$solutions[4]),
+         random_answer_order = TRUE,
+         allow_retry = TRUE,
+         submit_button = "Soumettre une réponse",
+         try_again_button = "Soumettre une nouvelle réponse")
+```
+
+
+### Modèle à risques proportionnels de Cox
+
+
+```{r survivalCox, echo = FALSE, warning=FALSE}
+# library(survival)
+wrong <- TRUE
+
+
+while(wrong){
+# dat <- wakefield::r_data_frame(n = 200,
+#   age(name = "age"),
+#   children(name = "enfants"),
+#   area(x=c("Suburbain","Urbain","Rural"), name = "milieu"),
+#   education(x=c("Secondaire",
+#                 "Professionnel","Collegial","Universitaire"),
+#             prob = mev::rdir(n = 1, 10*c(0.15, 0.20, 0.15, 0.5)),
+#             name = "education"),
+#   # employment(x=c("Employed","Student","Retired","Unemployed"),
+#              # prob = mev::rdir(n = 1, alpha = 40*c(0.7,0.1,0.1,0.1))),
+#   gender(x = c("Homme","Femme"), name = "sexe")
+# )
+load("exercices/surv.RData")
+dat <- dat[sample.int(1000,200),]
+# Flip baseline categories for some diversity
+dat$milieu <- relevel(dat$milieu,
+                    ref=(refArea <- levels(dat$milieu)[sample.int(3,1)]) )
+dat$education <- relevel(dat$education,
+                    ref=(refEduc <- levels(dat$education)[sample.int(4,1)]) )
+dat$sexe <- relevel(dat$sexe,
+                    ref=(refGender <- levels(dat$sexe)[sample.int(2,1)]) )
+
+
+
+
+# Create copy with scaled first column
+dats <- dat
+dats[,1] <- scale(dats[,1])
+# Keep only selected columns
+cols <- sort(sample.int(5, 5))
+# Keep all columns, because otherwise too complicated
+# expand data matrix, remove intercept!
+modmat <- model.matrix(~., data = dats[,cols])[,-1]
+nm <- ncol(modmat)
+n <- nrow(modmat)
+resp <- rexp(n, rate = 1/170)/ exp(c(0.5*scale(modmat %*% runif(8, min = -1, max = 1))))
+cens <- runif(n, min = 0, max = max(resp)+100)
+coxdat <- data.frame(modmat)
+coxdat$y <- pmin(resp, cens)
+coxdat$failed <- cens > resp
+# coxdat <- coxed::sim.survdata(X = modmat, T = 280)$data
+ #careful, can be weird...
+coxmod <- survival::coxph(survival::Surv(coxdat$y, event=coxdat$failed) ~ ., data=dat[,cols])
+
+wrong <- any(is.na(coef(coxmod)), round(coef(coxmod),3) == 0)
+}
+
+tab <- broom::tidy(coxmod)
+class(tab) <- "data.frame"
+hazard <- round(exp(round(tab$estimate,3)),3)
+tab$hazard <- hazard
+tab$statistic <- tab$statistic^2
+tab[,c(2:4,6)] <- apply(as.matrix(tab[,c(2:4,6)]), c(1,2), function(x){paste0("$",sprintf("%.3f", x),"$")})
+tab[,5] <- ifelse(tab[,5, drop = TRUE] < 1e-3, "$< 10^{-3}$", paste0("$",sprintf("%.3f", tab[,5, drop = TRUE]),"$"))
+tab[,1] <- tolower(gsub("([a-z])([A-Z])", "\\1: \\2", tab[,1]))
+colnames(tab) <- c("variable","estimation", "erreur type", "stat. de Wald", "valeur-p","rapport de risque")
+
+
+cname <- colnames(dat)[cols]
+descrip <- paste0(
+  c("$\\texttt{age}$ (en années)",
+    "nombre d'$\\texttt{enfants}$",
+    paste0("$\\texttt{milieu}$ (référence $\\texttt{",tolower(refArea),"}$)"),
+    paste0("$\\texttt{education}$ (référence $\\texttt{",tolower(refEduc),"}$)"),
+    paste0("$\\texttt{sexe}$ (référence $\\texttt{",tolower(refGender),"}$)"))[cols], collapse = ", ")
+#car::Anova(mod1, type=3)
+# FALSE ANSWERS:
+# write decrease instead of increase for a hazard
+# hazard decreases survival time by exp(beta)
+# the odds of survival increase by
+# increase in hazard leads to a decrease in survival time
+# CORRECT ANSWERS:
+# Change in hazard/survival is *significant/not significant
+# hazard is multiplied by X
+# risk of two categorical variables via difference
+
+levels <- c("années","enfants", tolower(
+  substring(names(coef(coxmod)[-(1:2)]),
+             first=1+nchar(c(rep("milieu",2),
+                             rep("education", 3),
+                             "sexe")))))
+switch2 <- sapply(cname[3:4], function(cnames){sample(which(!is.na(
+  stringr::str_match(
+  pattern = cnames,
+  string = names(coef(coxmod))))), 1)})
+
+
+statement1 <- function(vals, flip = TRUE,
+                       event = "de ne plus être au chômage", qty = "risque"){
+  if(flip){
+  vec <-   c(" pour chaque année de moins",
+              " pour chaque enfant de moins",
+              paste("pour quelqu'un qui vit dans un milieu",
+                tolower(refArea),
+                "plutôt que dans un milieu",
+                levels[3:4]),
+              paste("pour quelqu'un avec un diplôme",
+                    tolower(refEduc),
+                    "plutôt qu'un diplôme",
+                    levels[5:7]),
+              paste0("pour un",
+                     ifelse(refGender=="femme","e "," "),
+                    tolower(refGender),
+                    " plutôt qu'un",
+                    ifelse(refGender!="femme","e "," "),
+                    levels[8]))
+  } else{
+    vec <-  c(" pour chaque année additionnelle",
+              " pour chaque enfant de plus",
+              paste("pour quelqu'un qui vit dans un milieu",
+                levels[3:4],
+                "plutôt que dans un milieu",
+                tolower(refArea)),
+              paste("pour quelqu'un avec un diplôme",
+                    levels[5:7],
+                    "plutôt qu'un diplôme",
+                    tolower(refEduc)),
+             paste0("pour un",
+                     ifelse(levels[8]=="femme","e "," "),
+                    levels[8],
+                    " plutôt qu'un",
+                    ifelse(refGender=="femme","e "," "),
+                    tolower(refGender)))
+  }
+     paste0("Toutes choses égales par ailleurs, le ", qty, " ", event, c(ifelse(vals[(1:2)] < 1, " décroît de "," augmente de "), rep(" est ", 6)),
+          paste0(100*round(ifelse(vals < 1, 1-vals, vals-1),3),"%"),
+          c(rep("",2), ifelse(vals[-(1:2)] < 1, " inférieur "," supérieur ")),
+          vec, ".")
+}
+
+
+statement1f <- function(vals, flip = TRUE,
+                       event = "de ne plus être au chômage", qty = "probabilité de survie du chômage"){
+  if(flip){
+  vec <-   c(" pour chaque année de moins",
+              " pour chaque enfant de moins",
+              paste("pour quelqu'un qui vit dans un milieu",
+                tolower(refArea),
+                "plutôt que dans un milieu",
+                levels[3:4]),
+              paste("pour quelqu'un avec un diplôme",
+                    tolower(refEduc),
+                    "plutôt qu'un diplôme",
+                    levels[5:7]),
+              paste0("pour un",
+                     ifelse(refGender=="femme","e "," "),
+                    tolower(refGender),
+                    " plutôt qu'un",
+                    ifelse(refGender!="femme","e "," "),
+                    levels[8]))
+  } else{
+    vec <-  c(" pour chaque année additionnelle",
+              " pour chaque enfant de plus",
+              paste("pour quelqu'un qui vit dans un milieu",
+                levels[3:4],
+                " plutôt que dans un milieu",
+                tolower(refArea)),
+              paste("pour quelqu'un avec un diplôme",
+                    levels[5:7],
+                    "plutôt qu'un diplôme",
+                    tolower(refEduc)),
+             paste0("pour un",
+                     ifelse(levels[8]=="femme","e "," "),
+                    levels[8],
+                    " plutôt qu'un",
+                    ifelse(refGender=="femme","e "," "),
+                    tolower(refGender)))
+  }
+     paste0("Toutes choses égales par ailleurs, la ", qty, ifelse(event == "", "", paste0(" ", event)), c(ifelse(vals[(1:2)] < 1, " décroît de "," augmente de "), rep(" est ", 6)),
+          paste0(100*round(ifelse(vals < 1, 1-vals, vals),3),"%"),
+          c(rep("",2), ifelse(vals[-(1:2)] < 1, " inférieure "," supérieure ")),
+          vec, ".")
+}
+
+statement2 <- function(vals, event = "de ne plus être au chômage", qty = "risque"){
+  vec1 <-   c(rep("est multipliée par", 2),
+              paste("pour quelqu'un demeurant dans un milieu",
+                levels[3:4],"est"),
+              paste("pour quelqu'un avec un diplôme",
+                    levels[5:7],"est"),
+              paste("pour", switch(levels[8]=="femme","une","un"),
+                    levels[8], "est"))
+  vec2 <- c("pour chaque année additionnelle d'âge",
+              "pour chaque enfant additionnel",
+            rep(paste("fois celui de quelqu'un qui demeure dans un milieu",   tolower(refArea)),2),
+            rep(paste("fois celui de quelqu'un qui a un diplôme",
+                    tolower(refEduc)),3),
+            paste("fois celui",
+                  switch(refGender, Homme = "d'un", Femme="d'une"),
+                    tolower(refGender)))
+     paste0("Toutes choses égales par ailleurs, le ", qty, " ",
+     event, " ", vec1, " ", round(vals,3), " ", vec2, ".")
+}
+
+statement2f <- function(vals, event = "de ne plus être au chômage", qty = "risque"){
+  vec1 <-   c(rep("croît par un facteur", 2),
+              paste("pour quelqu'un demeurant dans un milieu",
+                levels[3:4],"est"),
+              paste("pour quelqu'un avec un diplôme",
+                    levels[5:7],"est"),
+              paste("pour", switch(levels[8]=="femme","une","un"),
+                    levels[8], "est"))
+  vec2 <- c("pour chaque année additionnelle d'âge",
+              "pour chaque enfant additionnel",
+            rep(paste("fois celle de quelqu'un qui demeure dans un milieu",   tolower(refArea)),2),
+            rep(paste("fois celle de quelqu'un qui a un diplôme",
+                    tolower(refEduc)),3),
+            paste("fois celle",
+                  switch(refGender, Homme = "d'un", Femme="d'une"),
+                    tolower(refGender)))
+     paste0("Toutes choses égales par ailleurs, la ", qty, " ",
+     event, " ", vec1, " ", round(vals,3), " ", vec2, ".")
+}
+
+statement3 <- function(vals, event = "de ne plus être au chômage", qty = "risque"){
+  vec1 <-   c(ifelse(vals[1:2] <0, "diminue de","augmente de"),
+              paste("pour quelqu'un demeurant dans un milieu",
+                levels[3:4], "est"),
+              paste("pour quelqu'un avec un diplôme",
+                    levels[5:7],
+                    "est"),
+              paste("pour",
+                    switch(levels[8],homme="un",femme="une"),
+                    levels[8], "est"))
+  vec2 <- c("pour chaque année additionnelle d'âge",
+              "pour chaque enfant additionnel",
+            rep(paste("à celui de quelqu'un qui demeure dans un milieu",   tolower(refArea)),2),
+            rep(paste("à celui de quelqu'un qui a un diplôme",
+                    tolower(refEduc)),3),
+            paste("à celui",
+                  switch(refGender, Homme = "d'un", Femme="d'une"),
+                    tolower(refGender)))
+
+     paste0("Toutes choses égales par ailleurs, le ",
+            qty ," ", event, " ", vec1," ",
+            round(abs(vals),3), " unités ",
+            c(rep("", 2), ifelse(vals[3:8] < 0,
+                                 "inférieur ", "supérieur ")),
+            vec2,  ".")
+}
+
+wrong <- c(
+  statement1(hazard, flip = TRUE, event = "de devenir chômeur")[sample.int(8,1)],
+  statement1(1/hazard, flip = TRUE, event = "de devenir chômeur")[sample.int(8,1)],
+  statement1(hazard, flip = FALSE, event = "de devenir chômeur")[sample.int(8,1)],
+  statement1(hazard, flip = FALSE, qty = "risque cumulatif")[sample.int(8,1)],
+  statement1(1/hazard, flip = FALSE)[sample.int(8,1)],
+  statement1f(1/hazard, flip = FALSE, qty = "probabilité de survie", event="")[sample.int(8,1)],
+  statement1(1/hazard, flip = FALSE, event = "de devenir chômeur")[sample.int(8,1)],
+   statement1(1/hazard, flip = FALSE,
+              event = "de ne plus être au chômage")[sample.int(8,1)],
+  statement2(vals = 1/hazard)[sample.int(8,1)],
+  statement2f(vals = hazard, qty = "probabilité de survie", event = "")[sample.int(8,1)],
+  statement2(vals = 1/hazard, "de devenir chômeur")[sample.int(8,1)],
+  statement3(round(coef(coxmod),3), qty = "risque cumulatif")[sample.int(8,1)],
+  statement3(-round(coef(coxmod),3), qty = "risque")[sample.int(8,1)])
+  # paste0("La cote d'être sans emploi est ", ifelse(5 %in% cols, ifelse(coef(coxmod)[length(coef(coxmod))] < 0, "inférieure", "plus grande"),"identique")," pour ", switch(levels[8],"homme"="un homme","femme"="une femme")," que pour ", switch(refGender,"Homme"="un homme.","Femme"="une femme.")))
+
+correct <- c(statement1(vals = 1/hazard, flip = TRUE),
+             statement1(vals = 1/hazard, event = "de ne plus être au chômage", flip = TRUE),
+             statement1(vals = 1/hazard, qty = "risque cumulatif", flip = TRUE),
+             statement1(vals = 1/hazard, event = "de ne plus être au chômage", qty = "risque cumulatif", flip = TRUE),
+             statement1(vals = hazard, flip = FALSE),
+             statement1(vals = hazard, event = "de ne plus être au chômage", flip = FALSE),
+             statement1(vals = hazard, qty = "risque cumulatif", flip = FALSE),
+             statement1(vals = hazard, event = "de ne plus être au chômage", qty = "risque cumulatif", flip = FALSE),
+             statement2(vals = hazard),
+             statement2(vals = hazard,qty = "risque cumulatif"),
+             statement2(vals = hazard, event = "de ne plus être au chômage", qty = "risque cumulatif"),
+             statement2(vals = hazard, event = "de ne plus être au chômage"))
+
+
+
+okayflip <- which(abs(
+  ifelse(1/hazard < 1, 1-1/hazard, 1/hazard-1) -
+  ifelse(hazard < 1, 1-hazard, hazard - 1)) > 5e-2)
+# hazperc <- 100*ifelse(hazard < 1, 1-hazard, hazard - 1)
+
+if(length(okayflip) > 0){
+  wrong <- c(wrong,
+             statement1(vals = 1-sign(1-hazard)*(1-hazard),
+                       flip = TRUE)[okayflip],
+             statement1(vals = 1-sign(1-hazard)*(1-hazard),
+                       flip = TRUE,
+                       event = "de ne plus être au chômage")[okayflip])
+}
+wrong <- unique(wrong)
+correct <- unique(correct)
+
+qu <- c(wrong[sample.int(length(wrong), 4)],
+        correct[sample.int(length(correct),1)])
+
+ans <- c(rep(FALSE, 4), TRUE)
+sub <- sample.int(5,5)
+sc <-  list(questions = qu[sub],
+      solutions = ans[sub])
+sc$questions[5] <- "Aucune de ces réponses."
+
+```
+Une étude considère la durée du chômage de personnes qui ont perdu leur emploi depuis le début de la pandémie jusqu'à maintenant. Un modèle à risques proportionnels de Cox a été ajusté aux données censurées à droite avec comme variables explicatives `r descrip`; on postule que la censure est non informative.
+
+
+```{r printabcox, echo = FALSE, comment = NA}
+knitr::kable(tab,
+   align = "lrrrrrr",
+   label = "tabcox",
+   booktabs = TRUE,
+   caption = "Estimation des coefficients du modèle à risques proportionnels de Cox.") #,
+  #    include.rownames = FALSE,
+  #    booktabs = TRUE,
+  #    sanitize.text.function=identity,
+  #   sanitize.rownames.function = identity,
+  #    sanitize.colnames.function = identity,
+  #    comment = FALSE)
+
+```
+```{r question8, echo = FALSE}
+question("Sur la base des estimations rapportées dans le Tableau, lequel des énoncés suivants est vrai?",
+         answer(sc$questions[1], correct = sc$solutions[1]),
+         answer(sc$questions[2], correct = sc$solutions[2]),
+         answer(sc$questions[3], correct = sc$solutions[3]),
+         answer(sc$questions[4], correct = sc$solutions[4]),
+         answer(sc$questions[5], correct = sc$solutions[5]),
+         random_answer_order = TRUE,
+         allow_retry = TRUE,
+         submit_button = "Soumettre une réponse",
+         try_again_button = "Soumettre une nouvelle réponse")
+```

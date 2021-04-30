@@ -5,8 +5,8 @@ output:
     allow_skip: true
 runtime: shiny_prerendered
 description: >
-  Questions sur le maximum de vraisemblance, les tests basés sur la vraisemblance et les critères d'information. 
-  
+  Questions sur le maximum de vraisemblance, les tests basés sur la vraisemblance et les critères d'information.
+
 ---
 
 ```{r setup, include=FALSE}
@@ -14,7 +14,7 @@ library(learnr)
 knitr::opts_chunk$set(echo = TRUE, highlight = TRUE)
 ```
 
-## Vraisemblance
+### Vraisemblance
 
 
 ```{r trueorfalselik, echo=FALSE}
@@ -29,6 +29,7 @@ question_radio("Lequel des énoncés suivant est vrai?",
   try_again_button = "Soumettre une nouvelle réponse")
 ```
 
+### Statistiques de test
 
 ```{r liktests, echo=FALSE}
 question_radio("Lequel des énoncés suivant est vrai?",
@@ -42,9 +43,9 @@ question_radio("Lequel des énoncés suivant est vrai?",
   try_again_button = "Soumettre une nouvelle réponse")
 
 ```
+### Critères d'information
 
-
-```{r aic, echo=FALSE}
+```{r aic, echo=FALSE, warning = FALSE}
 question_radio("Lequel des énoncés suivant est vrai?",
   answer("Le AIC mène toujours à un modèle plus simple que le BIC pour $n > 10$.",  correct = FALSE, message = "La pénalité du critère AIC est de deux fois le nombre de paramètres, tandis que celle du BIC est $\\ln(n)$ qui excède 2.30 dès que $n>10$."),
   answer("Si on compare deux modèles emboîtés, on devrait prendre celui avec la plus grande vraisemblance.", correct = FALSE, message = "Le modèle plus petit (modèle contraint) donne toujours un moins bon ajustement que le modèle complet (pensez au critère du maximum de vraisemblance)."),
@@ -55,4 +56,103 @@ question_radio("Lequel des énoncés suivant est vrai?",
   submit_button = "Soumettre une réponse",
   try_again_button = "Soumettre une nouvelle réponse")
 
+
+
+
+```{r computeIC, echo = FALSE, results = "hide", warning=FALSE}
+
+rtnorm <- function(n, mu, sd, lb = -Inf, ub = Inf){
+  lb_n <- (lb - mu) / sd
+  ub_n <- (ub - mu) / sd
+  qnorm(pnorm(lb_n) + runif(n)*(pnorm(ub_n) - pnorm(lb_n))) * sd + mu
+}
+## parameters
+ll <- cumsum(c(-150 + runif (1, -100, 100),
+        rtnorm(n = 1, mu = 100,
+             sd = 20, lb = 10, ub = Inf),
+        rtnorm(n = 1, mu = 5,
+             sd = 20, lb = 10, ub = Inf)))
+ll <- round(ll, 3)
+n1 <- sample(3:6, size = 1)
+n2 <- sample(3:6, size = 1)
+npars <- c(n1, n1+n2-1, n1*n2)
+ntot <- round(rtnorm(n = 1, mu = 1096,
+             sd = 200, lb = 500, ub = Inf))
+aics <- round(-2*ll + 2* npars,3)
+bics <- round(-2*ll + log(ntot) * npars, 3)
+tab <- data.frame(model = paste0("$\\mathrm{M}_",1:3,"$"),
+                  variables = c("$\\texttt{type}$",
+                                "$\\texttt{type}$ + $\\texttt{region}$",
+                                "$\\texttt{type}$ + $\\texttt{region}$ + $\\texttt{type}*\\texttt{region}$"),
+                  # p = 1+cumsum(nlev-1),
+                  "log-lik." = ll,
+                  AIC = aics,
+                  BIC = bics)
+
+# tab[,2] <- sapply(tab[,3], function(x){paste0("$",sprintf("%i", x),"$")})
+tab[,3:5] <- sapply(tab[,3:5], function(x){paste0("$",sprintf("%.3f", x),"$")})
+bool1 <- sample.int(3,1)
+if(bool1 == 1L){
+  #bool2 <- sample.int(2,2)
+  tab[1, sample(3:5,1)] <- "$\\star$"
+  tab[2,  4:5] <- "$\\star$"
+  tab[3,  c(3,5)] <- "$\\star$"
+} else if(bool1 == 2L){
+   bool2 <- sample.int(2,2) + 1L
+   tab[bool2[1], sample(3:5, 1)] <- "$\\star$"
+   tab[c(1, bool2[2]), 4:5] <- "$\\star$"
+} else if(bool1 == 3L){
+  bool2 <- sample(c(1,3),2)
+  tab[bool2[1], sample(3:5,1)] <- "$\\star$"
+  tab[bool2[2], 4:5] <- "$\\star$"
+  tab[2, c(sample(3:4, 1),5)] <- "$\\star$"
+}
+
+colnames(tab)[3:5] <- c("$\\ell(\\boldsymbol{\\widehat{\\beta}})$",
+                        "$\\mathsf{AIC}$",
+                        "$\\mathsf{BIC}$")
+LRT_names <- sort(sample.int(3,2))
+## solution
+res <- diff(npars[LRT_names])
+## schoice
+err <- c(seq.int(from = 1, to = res - 1, by = 1),
+          seq.int(from = res + 1, to = npars[3], by = 1)
+        )
+err <- sample(err, size = 4L)
+sub <- sample.int(5,5)
+qu <- c(res, err)
+ans <- c(TRUE, rep(FALSE, 4))
+sc <- list(questions = qu[sub],
+           solutions = ans[sub])
+od <- order(sc$questions[-5])
+sc$questions[-5] <- sc$questions[od]
+sc$solutions[-5] <- sc$solutions[od]
+sc$questions[5] <- "Aucune de ces réponses."
+
+```
+### Test du rapport de vraisemblance
+
+On considère un modèle de régression linéaire classique pour la proportion d'assurés avec un échantillon de taille $n=`r ntot`$, en fonction de la région ($\texttt{region}$) et du type de maisons ($\texttt{type}$).
+
+```{r tableIC, echo = FALSE}
+colnames(tab)[1:2] <- paste0("$\\textbf{",c("modèle", "variables"),"}$")
+knitr::kable(tab, align="lllrrr", caption = "Mesures d'adéquation pour la régression logistique: valeur de la log vraisemblance évaluée au maximum de vraisemblance, $\\ell(\\boldsymbol{\\widehat{\\beta}})$, et critères d'information.",
+      booktabs = TRUE)
+
+```
+
+ `r switch(bool1, paste0("Le nombre de paramètres pour la moyenne du modèle incluant le terme d'interaction est ", npars[3]), paste0("Le nombre de niveaux de la variable catégorielle $\\texttt{type}$ est ", n1), paste0("Le nombre de niveaux de la variable catégorielle  $\\texttt{region}$ est ", n2))` et on veut faire un test du rapport de vraisemblance permettant de comparer les modèles `r tab[LRT_names[1],1]` et `r tab[LRT_names[2],1]`.
+
+
+```{r question7, echo = FALSE}
+question("Quels sont les degrés de liberté de la loi nulle du test khi-deux?",
+         answer(sc$questions[1], correct = sc$solutions[1]),
+         answer(sc$questions[2], correct = sc$solutions[2]),
+         answer(sc$questions[3], correct = sc$solutions[3]),
+         answer(sc$questions[4], correct = sc$solutions[4]),
+         answer(sc$questions[5], correct = sc$solutions[5]),
+         random_answer_order = TRUE,
+         allow_retry = TRUE,
+         submit_button = "Soumettre une réponse",
+         try_again_button = "Soumettre une nouvelle réponse")
 ```

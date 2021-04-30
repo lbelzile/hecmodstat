@@ -12,4 +12,6 @@ Des tutoriels sont disponibles.
 
 ```R
 learnr::run_tutorial("intro", package = "hecmodstat")
+learnr::run_tutorial("vraisemblance", package = "hecmodstat")
+learnr::run_tutorial("survie", package = "hecmodstat")
 ```

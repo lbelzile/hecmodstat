@@ -6,7 +6,7 @@ output:
 runtime: shiny_prerendered
 description: >
   Questions sur les tests d'hypothèses génériques et l'analyse exploratoire graphique de données.
-  
+
 ---
 
 ```{r setup, include=FALSE}
@@ -81,6 +81,7 @@ question_checkbox("Soit $\\mu_{2018}$ et $\\mu_{2019}$ le prix moyen de vente de
   try_again_button = "Soumettre une nouvelle réponse")
 ```
 
+
 ## Analyse exploratoire des données
 
 ```{r formatlong, echo = FALSE}
@@ -116,19 +117,19 @@ question("Quels sont les éléments d'une boîte à moustache?",
   try_again_button = "Soumettre une nouvelle réponse")
 ```
 
-Considérez le graphique suivant qui représente les données `renfe`. 
+Considérez le graphique suivant qui représente les données `renfe`.
 
 ```{r renfebadplot, echo = FALSE, eval = TRUE, message = FALSE}
 library(poorman)
 library(ggplot2)
 library(hecmodstat)
 renfe %>% subset(type != "REXPRESS") %>%
-    ggplot(aes(y = duree, x = prix, col = type)) + 
-    geom_point() + 
-    labs(x = "prix", 
+    ggplot(aes(y = duree, x = prix, col = type)) +
+    geom_point() +
+    labs(x = "prix",
          y = "durée de trajet (en minutes)",
-         col = "type de train") + 
-    theme(legend.position = "none") 
+         col = "type de train") +
+    theme(legend.position = "none")
 
 ```
 ```{r ameliorationgraphe, echo = FALSE}
@@ -136,11 +137,11 @@ question_checkbox("Lesquelles des propositions suivantes amélioreraient le grap
          answer("les axes devraient être permutés pour que la variable réponse figure sur l'axe des y (ordonnées)", correct = TRUE),
          answer("l'ajout d'une légende pour le code de couleur", correct = TRUE),
          answer("l'ajout de l'unité de prix", correct = TRUE),
-         answer("l'ajout d'un titre nous renseignant sur le contexte et les données", correct = TRUE), 
+         answer("l'ajout d'un titre nous renseignant sur le contexte et les données", correct = TRUE),
          answer("le retrait de la couleur qui indique les deux types de train à grande vitesse", message = "l'utilisation de la couleur évite un nouveau panneau graphique et permet de mieux comparer les deux types de train."),
          answer("un autre type de géométrique graphique que le nuage de points, par exemple une boîte à moustache", correct = TRUE),
          answer("la transformation de la durée de trajet en variable catégorielle"),
-         answer("l'utilisation de la transparence pour distinguer les duplicatas", correct = TRUE), 
+         answer("l'utilisation de la transparence pour distinguer les doublons", correct = TRUE),
          answer("l'ajout de bruit vertical pour éviter la superposition", message = "Si cette option est souvent souhaitable, la faible différence ici entre les durées risque de rendre la représentation graphique trompeuse."),
          answer("un changement de l'axe pour qu'il inclut zéro", message = "Fausse bonne idée: ni le prix, ni la durée ne peuvent être plausiblement nuls et cette option compresserait les observations et rendrait difficile les comparaisons."),
  allow_retry = TRUE,

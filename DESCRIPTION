@@ -1,7 +1,7 @@
 Package: hecmodstat
 Type: Package
 Title: Cours de Modélisation statistique à HEC Montréal
-Version: 2020.11.14
+Version: 2021.04.29
 Author: Léo Belzile
 Maintainer: Léo Belzile <leo.belzile@hec.ca>
 Description: Quiz et données du cours MATH 60604
@@ -10,5 +10,5 @@ Encoding: UTF-8
 LazyData: true
 Depends: 
     R (>= 3.5)
-Imports: learnr, ggplot2, poorman, viridis, lme4, nlme, Matrix, survival
+Imports: learnr, ggplot2, tidyverse, viridis, lme4, nlme, Matrix, survival, knitr
 RoxygenNote: 7.1.1
