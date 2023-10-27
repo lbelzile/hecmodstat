@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">hecmodstat</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2020.11.14</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2021.04.29</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
@@ -59,44 +55,59 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="modélisation-statistique" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#mod%C3%A9lisation-statistique" class="anchor"></a>Modélisation statistique</h1></div>
+<div class="section level1">
+<div class="page-header"><h1 id="modélisation-statistique">Modélisation statistique<a class="anchor" aria-label="anchor" href="#mod%C3%A9lisation-statistique"></a>
+</h1></div>
 <p>Ce paquetage <strong>R</strong> contient des tutoriels et les jeux de données du cours MATH 60604 - Modélisation statistique à HEC Montréal.</p>
 <p>Vous pouvez installer le paquetage à partir de Github à l’aide des commandes suivantes après avoir installé <code>remotes</code>:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"learnr"</span>,<span class="st">"remotes"</span><span class="op">)</span><span class="op">)</span>
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"lbelzile/hecmodstat"</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"learnr"</span>,<span class="st">"remotes"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"lbelzile/hecmodstat"</span><span class="op">)</span></span></code></pre></div>
 <p>Des tutoriels sont disponibles.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="fu">learnr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/learnr/man/run_tutorial.html">run_tutorial</a></span><span class="op">(</span><span class="st">"intro"</span>, package <span class="op">=</span> <span class="st">"hecmodstat"</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">learnr</span><span class="fu">::</span><span class="fu"><a href="https://pkgs.rstudio.com/learnr/reference/run_tutorial.html" class="external-link">run_tutorial</a></span><span class="op">(</span><span class="st">"intro"</span>, package <span class="op">=</span> <span class="st">"hecmodstat"</span><span class="op">)</span></span>
+<span><span class="fu">learnr</span><span class="fu">::</span><span class="fu"><a href="https://pkgs.rstudio.com/learnr/reference/run_tutorial.html" class="external-link">run_tutorial</a></span><span class="op">(</span><span class="st">"vraisemblance"</span>, package <span class="op">=</span> <span class="st">"hecmodstat"</span><span class="op">)</span></span>
+<span><span class="fu">learnr</span><span class="fu">::</span><span class="fu"><a href="https://pkgs.rstudio.com/learnr/reference/run_tutorial.html" class="external-link">run_tutorial</a></span><span class="op">(</span><span class="st">"survie"</span>, package <span class="op">=</span> <span class="st">"hecmodstat"</span><span class="op">)</span></span></code></pre></div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a></li>
+<li><a href="https://creativecommons.org/licenses/by-sa/4.0" class="external-link">CC BY-SA 4.0</a></li>
 </ul>
 </div>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing hecmodstat</a></li>
+</ul>
+</div>
+
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Léo Belzile <br><small class="roles"> Maintainer </small>  </li>
 </ul>
 </div>
+
+
 
   </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Léo Belzile.</p>
+  <p></p>
+<p>Developed by Léo Belzile.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
@@ -104,6 +115,8 @@
 
   
 
+
+  
 
   </body>
 </html>
