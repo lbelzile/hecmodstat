@@ -11,4 +11,4 @@ LazyData: true
 Depends: 
     R (>= 3.5)
 Imports: learnr, ggplot2, tidyverse, viridis, lme4, nlme, Matrix, survival, knitr
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.2

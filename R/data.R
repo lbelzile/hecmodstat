@@ -265,3 +265,16 @@ NULL
 #' \item{\code{acceleration}}{nombre de secondes pour que la voiture accélère de 0 à 60 miles à l'heure}
 #' }
 "automobile"
+
+
+#' Temps d'attente pour le métro
+#'
+#' Temps (en secondes) de 17h59 jusqu'au départ de la prochaine rame de métro à la station Université de Montréal durant les jours de semaines. Les données ont été collectées pendant trois mois consécutifs.
+#'
+#' @docType data
+#' @format un vecteur numérique de 62 observations
+#' \describe{
+#' \item{\code{attente}}{temps (en secondes) avant le départ du prochain métro}
+#' }
+#' @source STM
+"attente"
